@@ -42,17 +42,20 @@ A compact, course-oriented project that uses a computer's webcam to detect a fac
 ```
 Emotional_recognizer_ITS_CV/
   ├─ src/
-  │  ├─ camera.py             # webcam capture
-  │  ├─ detector.py           # face detection wrapper
-  │  ├─ preprocessing.py      # crop/align/normalize
-  │  ├─ model.py              # load/run emotion model
-  │  ├─ visualizer.py         # drawing overlays
-  │  └─ app.py                # main loop (entry point)
-  ├─ models/                  # pretrained weights, model cards
-  ├─ configs/                 # yaml/json configs
-  ├─ notebooks/               # exploration/training
-  ├─ data/                    # sample images (no PII)
-  ├─ requirements.txt         # Python dependencies
+  │  ├─ camera.py                 # webcam capture
+  │  ├─ detector.py               # face detection wrapper
+  │  ├─ preprocessing.py          # crop/align/normalize
+  │  ├─ model.py                  # load/run emotion model
+  │  ├─ visualizer.py             # drawing overlays
+  │  └─ app.py                    # main loop (entry point)
+  ├─ model/                       # training artifacts (created by notebooks/code)
+  │  ├─ checkpoints/              # best model via callback (e.g., model.h5)
+  │  ├─ history/                  # training history (e.g., history.pkl)
+  │  └─ final_model.keras         # optional final saved model (or .h5)
+  ├─ configs/                     # yaml/json configs
+  ├─ notebooks/                   # exploration/training
+  ├─ data/                        # sample images or dataset symlinks (no PII)
+  ├─ requirements.txt             # Python dependencies
   └─ README.md
 ```
 
@@ -60,7 +63,7 @@ Emotional_recognizer_ITS_CV/
 We will finalize step-by-step setup with you. Suggested baseline:
 1. Create and activate a Python virtual environment
 2. Install dependencies from `requirements.txt`
-3. Download/place the pretrained emotion model in `models/`
+3. Download/place the pretrained emotion model in `model/` (e.g., `model/final_model.keras` or use `model/checkpoints/model.h5` produced by training)
 4. Run the app and allow webcam access
 
 ### Quick Start (to be finalized)
