@@ -1,12 +1,22 @@
 import cv2
 import os
+import time
+import numpy as np
 
-# --- Initialization ---
+# --- MODEL SETUP (TO BE UNCOMMENTED LATER) ---
+
+# --- INITIALIZATION ---
+# set to false if needed
+SAVE_CAPTURES = True
+OUTPUT_FOLDER = 'captured_faces'
+if SAVE_CAPTURES and not os.path.exists(OUTPUT_FOLDER):
+    os.makedirs(OUTPUT_FOLDER)
+
 cascade_path = os.path.join(cv2.data.haarcascades, 'haarcascade_frontalface_default.xml')
 face_cascade = cv2.CascadeClassifier(cascade_path)
 
 if face_cascade.empty():
-    print(f"Error loading cascade file.")
+    print("Error loading cascade file.")
     exit()
 
 cap = cv2.VideoCapture(0)
@@ -14,35 +24,54 @@ if not cap.isOpened():
     print("Error: Could not open webcam.")
     exit()
 
-print("Webcam started successfully! Press 'q' to quit. 📸")
+# --- VARIABLES ---
+PREDICTION_INTERVAL = 1.0  # seconds
+last_prediction_time = time.time()
+current_emotion = "Processing..."
 
-# --- Main Application Loop ---
+print("Webcam started. Press 'q' to quit.")
+
+# --- MAIN APPLICATION LOOP ---
 while True:
     ret, frame = cap.read()
     if not ret:
         break
 
-    gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-    
-    # Create a display frame from the grayscale image to draw on
-    display_frame = cv2.cvtColor(gray_frame, cv2.COLOR_GRAY2BGR)
+    gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY) # <--- THIS LINE IS NOW CORRECTED
+    faces = face_cascade.detectMultiScale(gray_frame, scaleFactor=1.1, minNeighbors=5, minSize=(50, 50))
 
-    faces = face_cascade.detectMultiScale(gray_frame, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
+    if len(faces) > 0:
+        (x, y, w, h) = faces[0]
+        cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
 
-    for (x, y, w, h) in faces:
-        cv2.rectangle(display_frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
+        if time.time() - last_prediction_time >= PREDICTION_INTERVAL:
+            last_prediction_time = time.time()
+            roi_gray = gray_frame[y:y+h, x:x+w]
 
-        # --- Placeholder for Emotion Model ---
-        emotion_label = "Processing..."
-        # ------------------------------------
+            # --- RESIZE THE CROPPED FACE TO 48x48 ---
+            roi_resized = cv2.resize(roi_gray, (48, 48), interpolation=cv2.INTER_AREA)
 
-        cv2.putText(display_frame, emotion_label, (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 255, 0), 2)
+            # --- MODEL INFERENCE PLACEHOLDER ---
 
-    cv2.imshow('Real-Time Facial Emotion Recognition', display_frame)
+            # --- END OF PLACEHOLDER ---
+
+            if SAVE_CAPTURES:
+                timestamp = int(time.time())
+                filename = f"face_{timestamp}.jpg"
+                filepath = os.path.join(OUTPUT_FOLDER, filename)
+                # --- SAVE THE RESIZED 48x48 IMAGE ---
+                cv2.imwrite(filepath, roi_resized)
+                print(f"📸 Saved {filename} (48x48)")
+                # change this according to necessary pixels
+
+        cv2.putText(frame, current_emotion, (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 255, 0), 2)
+
+    cv2.imshow('Facial Emotion Recognition', frame)
 
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
 
-# --- Cleanup ---
+# --- CLEANUP ---
+print("Quitting program.")
 cap.release()
 cv2.destroyAllWindows()
