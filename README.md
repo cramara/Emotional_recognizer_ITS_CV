@@ -63,10 +63,11 @@ Emotional_recognizer_ITS_CV/
 We will finalize step-by-step setup with you. Suggested baseline:
 1. Create and activate a Python virtual environment
 2. Install dependencies from `requirements.txt`
-3. Download/place the pretrained emotion model in `model/` (e.g., `model/final_model.keras` or use `model/checkpoints/model.h5` produced by training)
-4. Run the app and allow webcam access
+3. **Important**: Place the trained emotion model file `final_model.keras` in the `model/` directory
 
-### Quick Start (to be finalized)
+### Quick Start
+
+#### Using Virtual Environment
 ```bash
 # 1) Create venv (example)
 python -m venv .venv && .venv\\Scripts\\activate
@@ -74,10 +75,18 @@ python -m venv .venv && .venv\\Scripts\\activate
 # 2) Install dependencies
 pip install -r requirements.txt
 
-# 3) Launch the real-time demo
-python -m src.app --camera 0 --config configs/default.yaml
+# 3) Navigate to program directory
+cd program
+
+# 4) Launch the real-time demo
+python Program.py
 ```
 
+**Note**: Press 'q' to quit the application.
+
+### Required Files
+Make sure you have the following files in place:
+- `model/final_model.keras` - The trained emotion recognition model
 ### Configuration
 - `configs/default.yaml` controls detector type, model path, input size, labels, smoothing, thresholds, and visualization options
 
